@@ -8,9 +8,9 @@ import (
 	"strings"
 	"sync"
 
-	http "github.com/Carcraftz/fhttp"
+	http "github.com/molatunji/fhttp"
 
-	"github.com/Carcraftz/fhttp/http2"
+	"github.com/molatunji/fhttp/http2"
 	"golang.org/x/net/proxy"
 
 	utls "github.com/Carcraftz/utls"

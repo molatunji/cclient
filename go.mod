@@ -3,8 +3,8 @@ module github.com/molatunji/cclient
 go 1.21.6
 
 require (
-	github.com/Carcraftz/fhttp v0.0.0-20220112175241-f36cd20af880
 	github.com/Carcraftz/utls v0.0.0-20220413235215-6b7c52fd78b6
+	github.com/molatunji/fhttp v0.2.0
 	golang.org/x/net v0.21.0
 )
 

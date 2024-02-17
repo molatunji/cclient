@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	http "github.com/Carcraftz/fhttp"
-	"github.com/Carcraftz/fhttp/cookiejar"
+	http "github.com/molatunji/fhttp"
+	"github.com/molatunji/fhttp/cookiejar"
 
 	utls "github.com/Carcraftz/utls"
 	"golang.org/x/net/proxy"
