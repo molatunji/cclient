@@ -1,70 +1,72 @@
 package cclient
 
 import (
+	"log"
 	"time"
 
 	http "github.com/Carcraftz/fhttp"
-	 "github.com/Carcraftz/fhttp/cookiejar"
-
-	"golang.org/x/net/proxy"
+	"github.com/Carcraftz/fhttp/cookiejar"
 
 	utls "github.com/Carcraftz/utls"
+	"golang.org/x/net/proxy"
+	"golang.org/x/net/publicsuffix"
 )
 
 func NewClient(clientHello utls.ClientHelloID, proxyUrl string, allowRedirect bool, timeout time.Duration) (http.Client, error) {
+	jar, err := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
+
+	if err != nil {
+		log.Fatal(err)
+	}
 	if len(proxyUrl) > 0 {
-		dialer, err := newConnectDialer(proxyUrl)
+		dialer, err := NewConnectDialer(proxyUrl)
 		if err != nil {
 			if allowRedirect {
-				cJar, _ := cookiejar.New(nil)
 				return http.Client{
-					Jar:     cJar,
-					Timeout: time.Second * timeout,
+					Transport: NewRoundTripper(clientHello, dialer),
+					Timeout:   time.Second * timeout,
+					Jar:       jar,
 				}, err
 			}
-			cJar, _ := cookiejar.New(nil)
 			return http.Client{
-				Jar:     cJar,
-				Timeout: time.Second * timeout,
+				Transport: NewRoundTripper(clientHello, dialer),
+				Timeout:   time.Second * timeout,
 				CheckRedirect: func(req *http.Request, via []*http.Request) error {
 					return http.ErrUseLastResponse
 				},
+				Jar: jar,
 			}, err
 		}
 		if allowRedirect {
-			cJar, _ := cookiejar.New(nil)
 			return http.Client{
-				Jar:       cJar,
-				Transport: newRoundTripper(clientHello, dialer),
+				Transport: NewRoundTripper(clientHello, dialer),
 				Timeout:   time.Second * timeout,
+				Jar:       jar,
 			}, nil
 		}
-		cJar, _ := cookiejar.New(nil)
 		return http.Client{
-			Jar:       cJar,
-			Transport: newRoundTripper(clientHello, dialer),
+			Transport: NewRoundTripper(clientHello, dialer),
 			Timeout:   time.Second * timeout,
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
 				return http.ErrUseLastResponse
 			},
+			Jar: jar,
 		}, nil
 	} else {
 		if allowRedirect {
-			cJar, _ := cookiejar.New(nil)
 			return http.Client{
-				Jar:       cJar,
-				Transport: newRoundTripper(clientHello, proxy.Direct),
+				Transport: NewRoundTripper(clientHello, proxy.Direct),
 				Timeout:   time.Second * timeout,
+				Jar:       jar,
 			}, nil
 		}
-		cJar, _ := cookiejar.New(nil)
 		return http.Client{
-			Jar:       cJar,
-			Transport: newRoundTripper(clientHello, proxy.Direct),
+			Transport: NewRoundTripper(clientHello, proxy.Direct),
 			Timeout:   time.Second * timeout,
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
 				return http.ErrUseLastResponse
 			},
+			Jar: jar,
 		}, nil
 
 	}
